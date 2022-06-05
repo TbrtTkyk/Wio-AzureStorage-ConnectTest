@@ -15,4 +15,7 @@ public class WioService {
         this.repository = repository;
     }
 
+    public String getHello() {
+        return "Json Message is '" + repository.getHelloWorld().getMessage() + "'";
+    }
 }

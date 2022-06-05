@@ -13,11 +13,20 @@ import javax.servlet.http.HttpServletRequest;
 public class TestPage {
     private static final Logger log = LoggerFactory.getLogger(TestPage.class);
 
+    private WioService service;
+
     @Autowired
-    public TestPage() {}
+    public TestPage(WioService service) {
+        this.service = service;
+    }
 
     @GetMapping("test")
     public String hello(HttpServletRequest request) {
         return "Get from " + request.getRequestURI();
+    }
+
+    @GetMapping("gethello")
+    public String gethello(HttpServletRequest request) {
+        return service.getHello();
     }
 }
