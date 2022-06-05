@@ -30,7 +30,7 @@ public class TableClientProvider {
         }
     }
 
-    static CloudTableClient getTableClientReference() throws RuntimeException, IOException, URISyntaxException, InvalidKeyException {
+    static CloudTableClient getTableClientReference() throws RuntimeException, URISyntaxException, InvalidKeyException {
         CloudStorageAccount storageAccount;
         try {
             storageAccount = CloudStorageAccount.parse(prop.getProperty("StorageConnectionString"));

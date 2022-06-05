@@ -5,48 +5,53 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.table.CloudTable;
 import com.microsoft.azure.storage.table.CloudTableClient;
 import com.microsoft.azure.storage.table.TableBatchOperation;
+import com.microsoft.azure.storage.table.TableQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.util.ArrayList;
 
+@Repository
 public class AzureTableRepository {
     protected static CloudTableClient tableClient = null;
     protected static CloudTable table = null;
 
-    public void runSample() {
-        System.out.println("Azure Storage Table sample - Starting.");
+    @Autowired
+    public AzureTableRepository() throws RuntimeException, URISyntaxException, InvalidKeyException, StorageException {
+        // Tableサービスに干渉するためのTableClientを作成
+        tableClient = TableClientProvider.getTableClientReference();
+        // SensorsTestという名前のテーブルを取得
+        table = tableClient.getTableReference("SensorsTest");
+    }
 
-        try {
-            // Tableサービスに干渉するためのTableClientを作成
-            tableClient = TableClientProvider.getTableClientReference();
+    // SensorEntityをまとめて挿入・更新する
+    public void batchInsertOfSensorEntities(ArrayList<SensorEntity> entities) throws StorageException{
+        TableBatchOperation batchOperation = new TableBatchOperation();
 
-            // SensorsTestという名前のテーブルを取得
-            table = tableClient.getTableReference("SensorsTest");
-
-            // テーブルに値を追加
-            batchInsertOfSensorEntities(table);
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-            if (t instanceof StorageException) {
-                if (((StorageException) t).getExtendedErrorInformation() != null) {
-                    System.out.println(String.format("\nError: %s", ((StorageException) t).getExtendedErrorInformation().getErrorMessage()));
-                }
-            }
+        for (SensorEntity entity : entities) {
+            batchOperation.insertOrMerge(entity);
         }
 
-        System.out.println("\nAzure Storage Table sample - Completed.\n");
+        table.execute(batchOperation);
+    }
+    // SensorEntityを挿入・更新する
+    public void batchInsertOfSensorEntities(SensorEntity entity) throws StorageException{
+        TableBatchOperation batchOperation = new TableBatchOperation();
+        batchOperation.insertOrMerge(entity);
+        table.execute(batchOperation);
     }
 
-    private static void batchInsertOfSensorEntities(CloudTable table) throws StorageException{
-        TableBatchOperation batchOperation1 = new TableBatchOperation();
-        String ldt = LocalDateTime.now().toString();
-
-        SensorEntity entity = new SensorEntity("Temperature", ldt);
-        entity.setValue(0.0);
-        batchOperation1.insertOrMerge(entity);
-
-        table.execute(batchOperation1);
+    // query関係（製作途中）
+    public void querySensorEntity(String sensorName, String endRowKey) {
+        //
+        TableQuery<SensorEntity> rangeQuery = TableQuery.from(SensorEntity.class).where(
+                TableQuery.combineFilters(
+                        TableQuery.generateFilterCondition("PartitionKey", TableQuery.QueryComparisons.EQUAL, sensorName),
+                        TableQuery.Operators.AND,
+                        TableQuery.generateFilterCondition("RowKey", TableQuery.QueryComparisons.LESS_THAN, endRowKey)));
+        //return rangeQuery;
     }
-
 
 }
