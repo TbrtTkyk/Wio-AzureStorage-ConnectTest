@@ -1,0 +1,2 @@
+# Wio-AzureStorage-ConnectTest
+プロメン後期で行うJavaでのWioアプリ-AzureStorage間の連携テスト
