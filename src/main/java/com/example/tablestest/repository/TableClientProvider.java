@@ -9,6 +9,9 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.Properties;
 
+// Azure StorageのTableにアクセスするCloudTableClientを作成するクラス
+// 以下ソースコード参照
+// https://github.com/Azure-Samples/storage-table-java-getting-started/
 public class TableClientProvider {
     private static Properties prop;
 
