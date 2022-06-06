@@ -1,5 +1,6 @@
 package com.example.tablestest.repository;
 
+import com.example.tablestest.config.WioURLProvider;
 import com.example.tablestest.values.TemperatureData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -18,7 +19,7 @@ public class WioRepository {
 
     public TemperatureData getTemperature() {
         TemperatureData response = restTemplate.getForObject(
-                TemperatureData.url, TemperatureData.class);
+                WioURLProvider.temperature(), TemperatureData.class);
         return response;
     }
 }
