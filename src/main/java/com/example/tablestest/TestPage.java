@@ -24,21 +24,53 @@ public class TestPage {
         this.tableService = tableService;
     }
 
-    @GetMapping("test")
+    @GetMapping("test/")
     public String hello(HttpServletRequest request) {
         return "Get from " + request.getRequestURI();
     }
 
-    @GetMapping("wioTest")
+    @GetMapping("test/wio/get")
     public String wioTest(HttpServletRequest request) {
         SensorEntity entity = wioService.getSensorInfo();
-        return entity.getPartitionKey() + "(" + entity.getRowKey() + ") : " + entity.getValue();
+        return toStringSensorEntity(entity);
     }
 
-    @GetMapping("wioSet")
+    @GetMapping("test/azure/previous")
+    public String mostPrevious(HttpServletRequest request) {
+        SensorEntity entity = tableService.getMostPrevious();
+        return toStringSensorEntity(entity);
+    }
+
+    @GetMapping("test/set")
     public String wioSet(HttpServletRequest request) {
         SensorEntity entity = wioService.getSensorInfo();
-        tableService.addSensorInfo(entity);
-        return "Complete";
+        if( entity == null ) {
+            return "Failed to get Sensor Information...";
+        }
+        try {
+            tableService.addSensorInfo(entity);
+            return "Failed to set Sensor Information...";
+        } catch (Throwable t){
+            return "Complete to set Sensor Information!";
+        }
+    }
+
+    @GetMapping("test/delete")
+    public String deleteOverSize(HttpServletRequest request) {
+        try {
+            tableService.deleteOverSize();
+            return "Complete to delete!";
+        } catch (Throwable t) {
+            return "Failed to delete...";
+        }
+    }
+
+    // SensorEntityを見やすいように文字列に変換
+    private String toStringSensorEntity(SensorEntity entity) {
+        if (entity == null) {
+            return "Failed to get Sensor Information...";
+        } else {
+            return entity.getPartitionKey() + "(" + entity.getRowKey() + ") : " + entity.getValue();
+        }
     }
 }

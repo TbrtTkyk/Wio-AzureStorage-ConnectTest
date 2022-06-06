@@ -5,6 +5,7 @@ import com.example.tablestest.values.TemperatureData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 // WioからJsonデータをマッピングして取得するクラス
@@ -17,7 +18,7 @@ public class WioRepository {
         this.restTemplate = templateBuilder.build();
     }
 
-    public TemperatureData getTemperature() {
+    public TemperatureData getTemperature() throws HttpClientErrorException {
         TemperatureData response = restTemplate.getForObject(
                 WioURLProvider.temperature(), TemperatureData.class);
         return response;
