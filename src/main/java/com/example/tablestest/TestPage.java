@@ -3,6 +3,7 @@ package com.example.tablestest;
 import com.example.tablestest.service.AzureTableService;
 import com.example.tablestest.service.WioService;
 import com.example.tablestest.values.SensorEntity;
+import com.microsoft.azure.storage.StorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +50,9 @@ public class TestPage {
         }
         try {
             tableService.addSensorInfo(entity);
-            return "Failed to set Sensor Information...";
-        } catch (Throwable t){
             return "Complete to set Sensor Information!";
+        } catch (Throwable t){
+            return "Failed to set Sensor Information...";
         }
     }
 
@@ -62,6 +63,16 @@ public class TestPage {
             return "Complete to delete!";
         } catch (Throwable t) {
             return "Failed to delete...";
+        }
+    }
+
+    @GetMapping("test/azure/update")
+    public String updateInfo(HttpServletRequest request) {
+        try {
+            tableService.updateInfoForUnity();
+            return "Complete to update!";
+        } catch (StorageException e) {
+            return "Failed to update...";
         }
     }
 

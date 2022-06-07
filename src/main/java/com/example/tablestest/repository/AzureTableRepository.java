@@ -1,5 +1,6 @@
 package com.example.tablestest.repository;
 
+import com.example.tablestest.values.InfoForUnityEntity;
 import com.example.tablestest.values.SensorEntity;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.table.*;
@@ -17,16 +18,23 @@ import java.util.stream.StreamSupport;
 public class AzureTableRepository {
     protected static CloudTableClient tableClient = null;
     protected static CloudTable table = null;
+    protected static CloudTable unityTable = null;
 
     // SensorEntityクラスを日付で比較するComparator
     private static final Comparator<SensorEntity> dateComparator = Comparator.comparing(SensorEntity::getTimestamp);
+    // SensorEntityクラスを計測値で比較するComparator
+    private static final Comparator<SensorEntity> valueComparator = Comparator.comparing(SensorEntity::getValue);
 
     @Autowired
     public AzureTableRepository() throws RuntimeException, URISyntaxException, InvalidKeyException, StorageException {
         // Tableサービスに干渉するためのTableClientを作成
         tableClient = TableClientProvider.getTableClientReference();
-        // SensorsTestという名前のテーブルを取得
+        // SensorsTest、SensorInfoForUnityという名前のテーブル情報を取得
         table = tableClient.getTableReference("SensorsTest");
+        unityTable = tableClient.getTableReference("SensorInfoForUnity");
+        // テーブルが存在しないなら作成する
+        table.createIfNotExists();
+        unityTable.createIfNotExists();
     }
 
     // 最新の指定のセンサー情報を取得する
@@ -78,6 +86,43 @@ public class AzureTableRepository {
         Double avg = StreamSupport.stream(entities.spliterator(), false)
                 .collect(Collectors.averagingDouble(SensorEntity::getValue));
         return avg;
+    }
+    // 指定のセンサーの計測値の最小を取得する
+    public double minSensorValue(String sensorName) {
+        // 指定のセンサー情報を取得
+        Iterable<SensorEntity> entities = getSensorEntities(sensorName);
+
+        // 最小を計算（データが空のときは0を返す）
+        SensorEntity min = StreamSupport.stream(entities.spliterator(), false)
+                .min(valueComparator)
+                .orElse(null);
+        if ( min == null ) return 0;
+        else return min.getValue();
+    }
+    // 指定のセンサーの計測値の最大を取得する
+    public double maxSensorValue(String sensorName) {
+        // 指定のセンサー情報を取得
+        Iterable<SensorEntity> entities = getSensorEntities(sensorName);
+
+        // 最小を計算（データが空のときは0を返す）
+        SensorEntity max = StreamSupport.stream(entities.spliterator(), false)
+                .max(valueComparator)
+                .orElse(null);
+        if ( max == null ) return 0;
+        else return max.getValue();
+    }
+
+    // Unity向けの情報テーブルを更新する
+    public void updateInfoForUnity(List<InfoForUnityEntity> entities) throws StorageException {
+        TableBatchOperation batchOperation = new TableBatchOperation();
+        for (InfoForUnityEntity entity : entities) {
+            batchOperation.insertOrReplace(entity);
+        }
+        unityTable.execute(batchOperation);
+    }
+    // Unity向けに提供している情報を取得する
+    public InfoForUnityEntity getInfoForUnity(String type, String infoName) throws StorageException {
+        return unityTable.execute(TableOperation.retrieve(type, infoName, InfoForUnityEntity.class)).getResultAsType();
     }
 
 
