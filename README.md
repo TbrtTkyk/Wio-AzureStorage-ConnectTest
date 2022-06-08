@@ -15,6 +15,15 @@ Unity側でAzureCloud上のデータを取り出してhololensに投影を行う
 
 表形式のデータベースとしてAzure Table Storageを選択したが、Azure SQL Databaseの方がよかったかも。
 
+## 注意
+実行するには、src/main/resources下にapplication.propertiesを追加し、以下の情報を記入する。
+
+azure.connectionString=YOUR_CONNECTION_STRING
+
+wio.accessToken.temperature=WIO_ACCESSTOKEN_FOR_TEMPERATURE
+
+※wioのアクセストークンについてはwio.accessToken.'センサー名'='アクセストークン' で実装予定。センサーの種類が増えれば項目も増える。
+
 ## 参考元
 ・『Javaを使用したAzure Storageサンプル | Microsoft Docs』
 
