@@ -26,9 +26,9 @@ public class AzureTableRepository {
     private static final Comparator<SensorEntity> valueComparator = Comparator.comparing(SensorEntity::getValue);
 
     @Autowired
-    public AzureTableRepository() throws RuntimeException, URISyntaxException, InvalidKeyException, StorageException {
+    public AzureTableRepository(CloudTableClient client) throws RuntimeException, URISyntaxException, InvalidKeyException, StorageException {
         // Tableサービスに干渉するためのTableClientを作成
-        tableClient = TableClientProvider.getTableClientReference();
+        tableClient = client;
         // SensorsTest、SensorInfoForUnityという名前のテーブル情報を取得
         table = tableClient.getTableReference("SensorsTest");
         unityTable = tableClient.getTableReference("SensorInfoForUnity");

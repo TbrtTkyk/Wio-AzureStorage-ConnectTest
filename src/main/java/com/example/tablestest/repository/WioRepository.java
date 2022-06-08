@@ -1,6 +1,6 @@
 package com.example.tablestest.repository;
 
-import com.example.tablestest.config.WioURLProvider;
+import com.example.tablestest.component.WioURLProvider;
 import com.example.tablestest.values.TemperatureData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -12,15 +12,17 @@ import org.springframework.web.client.RestTemplate;
 @Repository
 public class WioRepository {
     private RestTemplate restTemplate;
+    private WioURLProvider URLProvider;
 
     @Autowired
-    public WioRepository(RestTemplateBuilder templateBuilder) {
+    public WioRepository(RestTemplateBuilder templateBuilder, WioURLProvider urlProvider) {
         this.restTemplate = templateBuilder.build();
+        this.URLProvider = urlProvider;
     }
 
     public TemperatureData getTemperature() throws HttpClientErrorException {
         TemperatureData response = restTemplate.getForObject(
-                WioURLProvider.temperature(), TemperatureData.class);
+                URLProvider.getURLForTemperature(), TemperatureData.class);
         return response;
     }
 }
