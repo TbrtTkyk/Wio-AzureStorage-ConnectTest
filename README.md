@@ -1,10 +1,10 @@
 # Wio-AzureStorage-ConnectTest
-プロメン後期で行うJavaでのWioアプリ-AzureStorage間の連携テスト。
+プロメン後期で行うJavaでのWioNodeアプリ-AzureStorage間の連携テスト。
 
 どうしたらできるかを試行錯誤しながら作成。
 
 ## 開発目標
-JavaではWioからセンサー情報を取得し、加工してAzureCloud上に格納する。
+Java側でWioNodeからJson形式のセンサー情報を取得し、加工してAzureCloud上に格納する。
 
 Unity側でAzureCloud上のデータを取り出してhololensに投影を行う。
 
