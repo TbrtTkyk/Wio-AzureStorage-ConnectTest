@@ -1,8 +1,19 @@
 # Wio-AzureStorage-ConnectTest
 プロメン後期で行うJavaでのWioアプリ-AzureStorage間の連携テスト。
+
 どうしたらできるかを試行錯誤しながら作成。
 
-目的は、Wioからセンサー情報を取得し、加工するなりしてAzureStorage上に格納すること。
+## 開発目標
+JavaではWioからセンサー情報を取得し、加工してAzureCloud上に格納する。
+
+Unity側でAzureCloud上のデータを取り出してhololensに投影を行う。
+
+## 制作目的
+扱えるデータベース選択でAzureCloudの話が出たので、個人で実装できるか試作。
+
+初めて触るデータベースなので、調べながらの実装。
+
+表形式のデータベースとしてAzure Table Storageを選択したが、Azure SQL Databaseの方がよかったかも。
 
 ## 参考元
 ・『Javaを使用したAzure Storageサンプル | Microsoft Docs』
